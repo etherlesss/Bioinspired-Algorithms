@@ -1,5 +1,6 @@
-from readData import dataset
+from readData import *
 
 # TEST
 print(dataset)
 
+print(still_alive)
