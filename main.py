@@ -1,6 +1,11 @@
-from readData import *
+from Operations import read, selection
 
-# TEST
-print(dataset)
+# NOT USED YET: Discretization
+# TO DO: Metaheuristic implementation (MFO)
+# WHAT CAN PROBABLY BE DONE BETTER: FS
 
-print(still_alive)
+# Instalador de dependencias
+selection.selection()
+
+# This may or may not be removable in the future? serves purpose for testing for now.
+instance = read.readDataset("./Datasets/echocardiogram.data")
