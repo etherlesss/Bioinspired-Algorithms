@@ -3,13 +3,13 @@ import pkg_resources
 
 class d_installer:
     def __init__(self, d_path: str) -> None:
-        # Leer lista de dependencias desde la lista
+        # Read dependencies from list
         with open(d_path, 'r') as file:
             self.dependencies = [line.strip() for line in file.readlines()]
 
         self.install_dependencies()
 
-    # Instalador de dependencias
+    # Dependency installer
     def install_dependencies(self):
         for dependency in self.dependencies:
             if self.is_dependency_installed(dependency):
@@ -21,7 +21,7 @@ class d_installer:
                 except subprocess.CalledProcessError as e:
                     print(f"Failed to install {dependency}. Error: {e}")
 
-    # Verificador de dependencias
+    # Dependency verifier
     @staticmethod
     def is_dependency_installed(dependency):
         try:
