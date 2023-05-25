@@ -3,6 +3,8 @@ import numpy as np
 import math
 import time
 
+from Operations.read import readDataset
+from Problem.FS import FeatureSelection
 from solution import solution
 
 #
@@ -15,7 +17,7 @@ def MFO(path:str):
     max_iter = 0 # Max iterations
     lb = -100 # Lower bounds
     ub = 100 # Upper bounds
-    dim = 30 # The number of dimensions is based on the population (which are the columns)
+    dim = len(readDataset.getInstance.columns) # The number of dimensions is based on the population (which are the columns)
     N = 50 # Number of moths (search agents)
 
     if not isinstance(lb, list):
@@ -67,7 +69,7 @@ def MFO(path:str):
                 M[i,j] = np.clip(M[i, j], lb[j], ub[j])
             
             # Evaluate moths
-            OM[i] = M[i, :]
+            OM[i] = FeatureSelection.fitness(M[i, :])
 
         if (i == 1): # If iteration is equal to 1
             # Sort the first moth population
