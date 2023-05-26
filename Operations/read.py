@@ -16,6 +16,18 @@ class readDataset:
         # Extraer clases para confirmacion de resultados (2da columna del dataset)
         self.saved_class = self.dataset.iloc[:, 1]
 
+        # Extraer columnas que no sean calculables
+        self.dataset = self.dataset.drop(self.dataset.columns[[10, 11, 12]], axis=1)
+
+        # Obtener mediana
+
+
+        # Obtener promedio
+
+
+        # Rellenar valores "?" con mediana si la columna es categorica o promedio si es real
+
+
         # Eliminar columna que se guardo
         self.instance = self.dataset.drop(self.dataset.columns[[1]], axis=1)
 

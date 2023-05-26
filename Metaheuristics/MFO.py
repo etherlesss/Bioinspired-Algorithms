@@ -3,9 +3,10 @@ import numpy as np
 import math
 import time
 
+# This can be deleted
 from Operations.read import readDataset
 from Problem.FS import FeatureSelection
-from solution import solution
+from .solution import solution
 
 #
 #   Moth-flame optimizer module.
@@ -13,11 +14,11 @@ from solution import solution
 #   We also turning the original MFO to B-MFO since the Feature Selection is a discrete problem, meanwhile MFO is continuous.
 #
 
-def MFO(path:str):
-    max_iter = 0 # Max iterations
+def MFO(n_columns, path:str):
+    max_iter = 30 # Max iterations
     lb = -100 # Lower bounds
     ub = 100 # Upper bounds
-    dim = len(readDataset.getInstance.columns) # The number of dimensions is based on the population (which are the columns)
+    dim = n_columns # The number of dimensions is based on the population (which are the columns)
     N = 50 # Number of moths (search agents)
 
     if not isinstance(lb, list):
@@ -68,8 +69,9 @@ def MFO(path:str):
             for j in range(dim):
                 M[i,j] = np.clip(M[i, j], lb[j], ub[j])
             
-            # Evaluate moths
-            OM[i] = FeatureSelection.fitness(M[i, :])
+            # Evaluate moths | FITNESS
+            # Indiviual - Classificator - n neighbors
+            OM[i] = FeatureSelection.fitness(M[i, :], "KNN", 3)
 
         if (i == 1): # If iteration is equal to 1
             # Sort the first moth population
