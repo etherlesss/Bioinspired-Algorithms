@@ -22,4 +22,4 @@ print(n_columns)
 # (SOLVER)
 
 # Start metaheuristic
-# MFO.MFO(n_columns, path)
+#MFO.MFO(n_columns, path)
