@@ -1,9 +1,6 @@
 from Operations import read, selection
-from Metaheuristics import MFO
 
-# NOT USED YET: Discretization
-# TO DO: Metaheuristic implementation (MFO) + Metaheuristic Binarization, which goes in hand with previous point.
-# WHAT CAN PROBABLY BE DONE BETTER: FS (Feature Selection)
+# TO DO: Solver call + Metaheuristic binarization
 
 # Dependency installer
 selection.selection()
@@ -20,6 +17,3 @@ print(n_columns)
 
 # Solver call
 # (SOLVER)
-
-# Start metaheuristic
-#MFO.MFO(n_columns, path)
