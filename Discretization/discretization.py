@@ -2,17 +2,23 @@ import random
 import numpy as np 
 from scipy import special as scyesp
 
-def aplicarBinarizacion(ind, transferFunction, binarizationFunction, bestSolutionBin, indBin):
+#
+# Discretization module
+# Taken directly from: https://github.com/FelipeCisternasCaneo/OII450 
+# Translated to keep consistency
+#
+
+def applyBinarization(ind, transferFunction, binarizationFunction, bestSolutionBin, indBin):
     individuoBin = []
     for i in range(ind.__len__()):
         individuoBin.append(0)
 
     for i in range(ind.__len__()):
-        step1 = transferir(transferFunction, ind[i])
-        individuoBin[i] = binarizar(binarizationFunction, step1, bestSolutionBin[i], indBin[i])
+        step1 = transfer(transferFunction, ind[i])
+        individuoBin[i] = binarize(binarizationFunction, step1, bestSolutionBin[i], indBin[i])
     return np.array(individuoBin)
 
-def transferir(transferFunction, dimension):
+def transfer(transferFunction, dimension):
     if transferFunction == "S1":
         return S1(dimension)
     if transferFunction == "S2":
@@ -47,7 +53,7 @@ def transferir(transferFunction, dimension):
         return Z4(dimension)
 
 
-def binarizar(binarizationFunction, step1, bestSolutionBin, indBin):
+def binarize(binarizationFunction, step1, bestSolutionBin, indBin):
     if binarizationFunction == "STD":
         return Standard(step1)
     if binarizationFunction == "COM":

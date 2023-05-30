@@ -1,6 +1,12 @@
 import numpy as np
 import math
 
+#
+# QLearning module
+# Taken directly from: https://github.com/FelipeCisternasCaneo/OII450 
+# Translated and edited to keep consistency
+#
+
 class QLearning():
     
     def __init__(self, iterMax, paramsML, epsilon = 0.005, qlAlpha = 0.1):

@@ -1,19 +1,40 @@
-from Operations import read, selection
+from Util.selection import selection as exec_installer
+from Solver.solverFS import solver
+from Util.read import readDataset
 
-# TO DO: Solver call + Metaheuristic binarization
-
-# Dependency installer
-selection.selection()
+# Dependency Installer
+exec_installer()
 
 # Dataset path
-path = "./Datasets/echocardiogram.data"
+d_path = "./Datasets/echocardiogram.data"
 
-# This may or may not be removable in the future? serves purpose for testing for now.
-instance = read.readDataset(path)
+# Instance
+instance = readDataset(d_path)
 
-# 2 lines of test
-n_columns = len(instance.instance.columns)
-print(n_columns)
+# Discretization options
+"""
+    'V1-STD', 'V1-COM', 'V1-PS', 'V1-ELIT',
+    'V2-STD', 'V2-COM', 'V2-PS', 'V2-ELIT',
+    'V3-STD', 'V3-COM', 'V3-PS', 'V3-ELIT',
+    'V4-STD', 'V4-COM', 'V4-PS', 'V4-ELIT',
+    'S1-STD', 'S1-COM', 'S1-PS', 'S1-ELIT',
+    'S2-STD', 'S2-COM', 'S2-PS', 'S2-ELIT',
+    'S3-STD', 'S3-COM', 'S3-PS', 'S3-ELIT',
+    'S4-STD', 'S4-COM', 'S4-PS', 'S4-ELIT',
+"""
+
+# Classifier options
+"""
+    KNN, RandomForest, Xgboost
+"""
+
+# Parameters
+max_iter = 10
+population = len(instance.instance.columns)
+discretization = "V1-STD"
+classifier = "KNN"
+# Classifier params for KNN module, k is the number of neighbors, meanwhile 5 indicates that the number of neighbors is five
+Cparams = f'k:5'
 
 # Solver call
-# (SOLVER)
+solver(max_iter, population, d_path, discretization, classifier, Cparams)

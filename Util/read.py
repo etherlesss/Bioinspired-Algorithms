@@ -2,29 +2,29 @@ import pandas as pd
 import time
 import os
 import statistics
+
 class readDataset:
     
-    def __init__(self, path:str) -> None:
+    def __init__(self, d_path:str) -> None:
         print("Executing reading module...")
         time.sleep(2)
         os.system("cls")
 
-        print(f"Reading {path}")
+        print(f"Reading {d_path}")
 
-        # Leer dataset
-        self.dataset = pd.read_csv(path, on_bad_lines='skip')
+        # Read Dataset
+        self.dataset = pd.read_csv(d_path, on_bad_lines='skip')
 
-        # Extraer clases para confirmacion de resultados (2da columna del dataset)
+        # Extract class for result confirmation (2nd dataset column)
         self.saved_class = self.dataset.iloc[:, 1]
 
-        # Extraer columnas que no sean calculables
+        # Extract non-calculable columns
         self.dataset = self.dataset.drop(self.dataset.columns[[10, 11, 12]], axis=1)
         
-        # Eliminar columna que se guardo
+        # Delete saved column
         self.instance = self.dataset.drop(self.dataset.columns[[1]], axis=1)
 
-        # Obtener mediana y promedio
-
+        # Get median and average
         median = []
         promedio = []
         guardar = []
@@ -32,9 +32,9 @@ class readDataset:
         
         df = pd.DataFrame(self.instance)
         
-        #columns
+        # Columns
         for i in range(df.shape[1]):
-            #rows
+            # Rows
             for j in range(df.shape[0]):
                 if(df.iloc[j,i] == "?"):
                     continue 
@@ -47,10 +47,11 @@ class readDataset:
         print(median)
         print(promedio)
 
-        # Rellenar valores "?" con mediana si la columna es categorica o promedio si es real
-        #columns
+        # Fill "?" values with median if the column is categorical or average if is real
+
+        # columns
         for i in range(df.shape[1]):
-            #rows
+            # rows
             for j in range(df.shape[0]):
                 if df.iloc[j,i] == "?":
                     '''
@@ -73,7 +74,7 @@ class readDataset:
                     else:
                         df.iloc[j,i] = promedio[i]
                     
-        #print toda la tabla
+        # print toda la tabla
         '''            
         for i in range(0,df.shape[0]):
                     print(i+1,end=' ')
@@ -81,10 +82,10 @@ class readDataset:
                         print(df.iloc[i,j],end=' ')
                     print()
         '''
-        #print tabla
+        # print tabla
         print(f"Instancia:\n{self.instance}\n")
         
-        #print clase
+        # print clase
         print(f"Clase:\n{self.saved_class}")
     
     def getInstance(self):

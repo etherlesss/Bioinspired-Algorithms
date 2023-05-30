@@ -1,11 +1,13 @@
-from Operations import read
+from Util.read import readDataset
 from ML import KNN, RandomForest, Xgboost
+from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
 
 import numpy as np
 
 class FeatureSelection:
     # ATRIBUTES
-    def __init__(self) -> None:
+    def __init__(self, d_path) -> None:
         self.__data = None
         self.__classes = None
         self.__trainingData = None
@@ -14,6 +16,7 @@ class FeatureSelection:
         self.__testingClass = None
         self.__gamma = 0.99
         self.__totalFeature = None
+        self.readInstance(d_path)
 
     # SETTERS
     def setData(self, data):
@@ -51,31 +54,62 @@ class FeatureSelection:
     def getTotalFeature(self):
         return self.__totalFeature
     
-    def readInstance(self):
-        self.setClasses = read.readDataset.getSavedClass()
-        self.setData = read.readDataset.getInstance()
-        self.setTotalFeature(len(self.__data))
+    def readInstance(self, d_path):
+        dataset_reader = readDataset(d_path)
+        self.setClasses(dataset_reader.getSavedClass())
+        self.setData(dataset_reader.getInstance())
+        self.setTotalFeature(len(self.getData()))
 
-    def fitness(self, individual, classificator, parametrosC):
+    def selection(self, selection):
+        data = self.getData().iloc[:, selection]
+
+        scaler = preprocessing.MinMaxScaler()
+
+        train_ratio = 0.8
+        test_ratio = 0.2
+        SEED = 12
+        
+        trainingData, testingData, trainingClass, testingClass  = train_test_split(
+            data,
+            self.getClasses(),
+            test_size= 1 - train_ratio,
+            random_state=SEED,
+            stratify=self.getClasses()
+        )
+
+        trainingData = scaler.fit_transform(trainingData)
+        testingData = scaler.fit_transform(testingData)
+
+        return trainingData, testingData, trainingClass, testingClass
+
+    def fitness(self, individual, classifier, parametrosC):
         accuracy = 0 
         f1Score = 0
         presicion = 0
         recall = 0
         mcc = 0
         trainingData, testingData, trainingClass, testingClass = self.selection(individual)
-        # cm, accuracy, f1Score, presicion, recall, mcc = self.KNN(trainingData, testingData, trainingClass, testingClass)
 
-        if classificator == 'KNN':
+        if classifier == 'KNN':
             accuracy, f1Score, presicion, recall, mcc = KNN(trainingData, testingData, trainingClass, testingClass, int(parametrosC.split(":")[1]))
-        if classificator == 'RandomForest':
+        if classifier == 'RandomForest':
             accuracy, f1Score, presicion, recall, mcc = RandomForest(trainingData, testingData, trainingClass, testingClass)
         
-        if classificator == 'Xgboost':
+        if classifier == 'Xgboost':
             accuracy, f1Score, presicion, recall, mcc = Xgboost(trainingData, testingData, trainingClass, testingClass)
             
         errorRate = np.round((1 - accuracy), decimals=3)
 
         fitness = np.round(( self.getGamma() * errorRate ) + ( ( 1 - self.getGamma() ) * ( len(individual) / self.getTotalFeature() ) ), decimals=3)
 
-        # return fitness, cm, accuracy, f1Score, presicion, recall, mcc, errorRate
         return fitness, accuracy, f1Score, presicion, recall, mcc, errorRate, len(individual)
+    
+    def factibility(self, individuo):
+        suma = np.sum(individuo)
+        if suma > 0:
+            return True
+        else:
+            return False
+    
+    def newSolution(self):
+        return np.random.randint(low=0, high=2, size = self.getTotalFeature())

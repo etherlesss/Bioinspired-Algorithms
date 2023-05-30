@@ -1,4 +1,4 @@
-from Dependencies import installer
+from Dependencies.installer import d_installer
 
 import time
 import os
@@ -6,7 +6,7 @@ import os
 class selection:
     def __init__(self) -> None:
         if (self.selection()):
-            installer.d_installer('./Dependencies/list.txt')
+            d_installer('./Dependencies/list.txt')
             time.sleep(2.5)
             os.system("cls")
         else:

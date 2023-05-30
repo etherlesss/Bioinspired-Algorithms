@@ -1,154 +1,70 @@
-import random
+import random as r
 import numpy as np
 import math
-import time
-
-# This can be deleted
-from Operations.read import readDataset
-from Problem.FS import FeatureSelection
-from .solution import solution
 
 #
 #   Moth-flame optimizer module.
-#   With guidance taken from https://github.com/7ossam81/EvoloPy/blob/master/optimizers/MFO.py, adapted to fit our college subject.
-#   We also turning the original MFO to B-MFO since the Feature Selection is a discrete problem, meanwhile MFO is continuous.
+#   With guidance taken from https://github.com/7ossam81/EvoloPy/blob/master/optimizers/MFO.py, adapted to fit our college subject and to keep consistency with the paper.
+#   We also turning the original MFO to B-MFO since the Feature Selection is a discrete problem, meanwhile MFO is continuous, but it's done outside in the solver.
 #
 
-def MFO(n_columns, path:str):
-    max_iter = 30 # Max iterations
-    lb = -100 # Lower bounds
-    ub = 100 # Upper bounds
-    dim = n_columns # The number of dimensions is based on the population (which are the columns)
-    N = 50 # Number of moths (search agents)
+def MFO(iter, max_iter, dim, N, initial_population, bestSolutions, fitness, BestFitnessArray):
+    flame_no = round(N - iter * ((N - 1) / max_iter))
 
-    if not isinstance(lb, list):
-        lb = [lb] * dim
-    if not isinstance(ub, list):
-        ub = [ub] * dim
+    M = initial_population.copy()
+    OM = fitness.copy()
 
-    # Initialize the position of moths (I function on the paper) M is the moth matrix, OM is the array of fitness values of each moth
-    M = np.zeros((N, dim))
-    for i in range(dim):
-        M[:, i] = np.random.uniform(0, 1 , N) * (ub[i] - lb[i] + lb[i])
-    OM = np.full(N, float("inf"))
+    # If iteration is equal to 0, otherwise is not the first gen
+    if (iter == 0):
+        # Sort the first moth population
+        sorted_fitness = np.sort(OM)
+        I = np.argsort(OM)
 
-    # S is the convergence curve
-    S = np.zeros(max_iter)
+        sorted_population = M[I, :]
 
-    sorted_population = np.copy(M)
-    sorted_fitness = np.zeros(N)
+        # Update the flames
+        F = sorted_population
+        OF = sorted_fitness
+    else:
+        # Initalize flames
+        F = bestSolutions[:flame_no, :]
+        OF = BestFitnessArray[:flame_no]
 
-    # F are the flames, OF is the array of fitness values of each flame
-    F = np.copy(M)
-    OF = np.zeros(N)
+        # Sort Flames
+        double_population = np.concatenate((F, M), axis=0)
+        double_fitness = np.concatenate((OF, OM), axis=0)
+        double_sorted_fitness = np.argsort(double_fitness, axis=0)
 
-    double_population = np.zeros((2 * N, dim))
-    double_fitness = np.zeros((2 * N))
+        double_population = np.take_along_axis(double_population, double_sorted_fitness, axis=0)
+        double_fitness = np.take_along_axis(double_fitness, double_sorted_fitness, axis=0)
 
-    double_sorted_population = np.zeros((N, dim))
-    double_sorted_fitness = np.zeros((N, dim))
+        # Update the flames
+        F = np.split(double_population, [flame_no], axis=0)[0]
+        OF = np.split(double_fitness, [flame_no], axis=0)[0]
 
-    previous_population = np.zeros((N, dim))
-    previous_fitness = np.zeros((N, dim))
+    # a linearly decreases from -1 to -2 to calculate t in equation [3.12]
+    a = -1 + iter * ((-1) / max_iter)
 
-    s = solution()
+    # For each moth
+    for i in range(0, N):
+        # And for each dimension
+        for j in range(0, dim):
+            if (i <= flame_no):
+                # Update D, using equation [3.13], D is the distance of the moth to the flame
+                D = abs(sorted_population[i, j] - M[i, j])
+                b = 1
+                t = (a - 1) * r.random() + 1
 
-    print(f"MFO is optimizing {path}")
+                # Update M[i,j] with equation [3.12], with respect to the corresponding moth
+                M[i, j] = (D * math.exp(b * t) * math.cos(t * 2 * math.pi) + sorted_population[i, j])
 
-    # START TIMER
-    start_timer = time.time()
-    start_time = time.strftime("%Y-%m-%d-%H-%M-%S")
+            if (i > flame_no):
+                # Update the position of each moth with respect to ONE flame, still with Equation [3.13]
+                D = abs(sorted_population[i, j] - M[i, j])
+                b = 1
+                t = (a - 1) * r.random() + 1
 
-    # Main loop (P Function)
-    for i in range(1, max_iter):
-        # Update number of flames with equation [3.14] from the paper
-        flame_no = round(N - i * ((N - 1) / max_iter))
-
-        for i in range(0, N):
-            # Check if moths go out of bounds from the search space
-            for j in range(dim):
-                M[i,j] = np.clip(M[i, j], lb[j], ub[j])
-            
-            # Evaluate moths | FITNESS
-            # Indiviual - Classificator - n neighbors
-            OM[i] = FeatureSelection.fitness(M[i, :], "KNN", 3)
-
-        if (i == 1): # If iteration is equal to 1
-            # Sort the first moth population
-            sorted_fitness = np.sort(OM)
-            I = np.argsort(OM)
-
-            sorted_population = M[I, :]
-
-            # Update the flames
-            F = sorted_population
-            OF = sorted_fitness
-        else:
-            # Sort the moths
-            double_population = np.concatenate((previous_population, F), axis = 0)
-            double_fitness = np.concatenate((previous_fitness, OF), axis = 0)
-            double_sorted_fitness = np.sort(double_fitness)
-            I2= np.argsort(double_fitness)
-
-            for newindex in range(0, 2 * N):
-                double_sorted_population[newindex, :] = np.array(double_population[I2[newindex], :])
-
-            sorted_fitness = double_sorted_fitness
-            sorted_population = double_sorted_population
-
-            # Update the flames
-            F = sorted_population
-            OF = sorted_fitness
-
-        # Update the position the best flame obtained so far
-        best_flame_score = sorted_fitness[0]
-        best_flame_pos = sorted_population[0, :]
-
-        previous_population = M
-        previous_fitness = OM
-
-        # a linearly dicreases from -1 to -2 to calculate t in equation [3.12]
-        a = -1 + i * ((-1) / max_iter)
-
-
-        # For each moth
-        for i in range(0, N):
-            # And for each dimension
-            for j in range(0, dim):
-                if (i <= flame_no):
-                    # Update D, using equation [3.13], D is the distance of the moth to the flame
-                    D = abs(sorted_population[i, j] - M[i, j])
-                    b = 1
-                    t = (a - 1) * random.random() + 1
-
-                    # Update M[i,j] with equation [3.12], with respect to the corresponding moth
-                    M[i, j] = (D * math.exp(b * t) * math.cos(t * 2 * math.pi) + sorted_population[i, j])
-
-                if (i > flame_no):
-                    # Update the position of each moth with respect to ONE flame, still with Equation [3.13]
-                    D = abs(sorted_population[i, j] - M[i, j])
-                    b = 1
-                    t = (a - 1) * random.random() + 1
-
-                    #  Update M[i,j] with equation [3.12], with respect to the corresponding moth
-                    M[i, j] = (D * math.exp(b * t) * math.cos(t * 2 * math.pi) + sorted_population[flame_no, j])
-
-        # BINARIZATION GOES HERE
-        
-        S[i] = best_flame_score
-
-        # Display best fitness with the iteration
-        if (i % 1 == 0):
-            print(f"#{str(i)} the fitness is: {str(best_flame_score)}")
-        
-        i += 1
-
-    # END TIMER
-    end_timer = time.time()
-    s.endTime = time.strftime("%Y-%m-%d-%H-%M-%S")
-    s.executionTime = end_timer - start_timer
-    s.convergence = S
-    s.optimizer = "MFO"
-    s.objfname = path
-
-    return s
+                #  Update M[i,j] with equation [3.12], with respect to the corresponding moth
+                M[i, j] = (D * math.exp(b * t) * math.cos(t * 2 * math.pi) + sorted_population[flame_no, j])
+    
+    return M, F
