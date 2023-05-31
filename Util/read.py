@@ -10,7 +10,7 @@ class readDataset:
         time.sleep(2)
         os.system("cls")
 
-        print(f"Reading {d_path}")
+        print(f"Reading {d_path}\n")
 
         # Read Dataset
         self.dataset = pd.read_csv(d_path, on_bad_lines='skip')
