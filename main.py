@@ -1,15 +1,11 @@
 from Util.selection import selection as exec_installer
 from Solver.solverFS import solver
-from Util.read import readDataset
 
 # Dependency Installer
 exec_installer()
 
 # Dataset path
 d_path = "./Datasets/echocardiogram.data"
-
-# Instance
-instance = readDataset(d_path)
 
 # Discretization options
 """
@@ -30,7 +26,7 @@ instance = readDataset(d_path)
 
 # Parameters
 max_iter = 50
-population = len(instance.instance.columns)
+population = 20
 discretization = ["V1", "STD"]
 classifier = "KNN"
 # Classifier params for KNN module, k is the number of neighbors, meanwhile 5 indicates that the number of neighbors is five
