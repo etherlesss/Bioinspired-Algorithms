@@ -35,8 +35,8 @@ def solver(max_iter, population, d_path, discretization, classifier, Cparams):
     # Calculate how factible is each individual and calculate initial fitness
     for i in range(initial_population.__len__()):
 
-        if not instance.factibility(initial_population[i]): # sin caracteristicas seleccionadas
-                initial_population[i] = instance.newSolution()
+        if not instance.factibility(initial_population[i]): # Without selected features
+            initial_population[i] = instance.newSolution()
 
         selection = np.where(initial_population[i] == 1)[0]
         fitness[i], accuracy[i], f1Score[i], precision[i], recall[i], mcc[i], errorRate[i], totalFeatureSelected[i] = instance.fitness(selection, classifier, Cparams)
@@ -82,17 +82,17 @@ def solver(max_iter, population, d_path, discretization, classifier, Cparams):
     for iter in range(0, max_iter):
         # Metaheuristic timer
         start_mh_timer = time.time()
-        for i in range(bestSolutions.__len___()):
+        for i in range(bestSolutions.__len__()):
             selection = np.where(bestSolutions[i] == 1)[0]
             BestFitnessArray[i], accuracyArray[i], f1ScoreArray[i], precisionArray[i], recallArray[i], mccArray[i], errorRateArray[i], totalFeatureSelectedArray[i] = instance.fitness(selection, classifier, Cparams)
 
         # Disturb population
-        population = MFO(iter, max_iter, instance.getTotalFeature(), len(population), initial_population, bestSolutions, fitness, BestFitnessArray)
+        population = MFO(iter, max_iter, instance.getTotalFeature(), len(initial_population), initial_population, bestSolutions, fitness, BestFitnessArray)
 
         # Binarization
         for i in range(initial_population.__len__()):
-            initial_population = applyBinarization(initial_population[i].tolist(), discretization[0], discretization[1], Best, b_matrix[i].tolist())
-
+            initial_population[i] = applyBinarization(initial_population[i].tolist(), discretization[0], discretization[1], Best, b_matrix[i].tolist())
+        
             # If there's no features selected we make a new one
             if not instance.factibility(initial_population[i]):
                 initial_population[i] = instance.newSolution()

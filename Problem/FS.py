@@ -1,5 +1,7 @@
 from Util.read import readDataset
-from ML import KNN, RandomForest, Xgboost
+from ML.KNN import KNN
+from ML.RandomForest import RandomForest
+from ML.Xgboost import Xgboost
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
@@ -56,9 +58,18 @@ class FeatureSelection:
     
     def readInstance(self, d_path):
         dataset_reader = readDataset(d_path)
+        
+        # Class for verification
         self.setClasses(dataset_reader.getSavedClass())
+        print(self.__classes)
+
+        # Data without the class and non-relevant information
         self.setData(dataset_reader.getInstance())
-        self.setTotalFeature(len(self.getData()))
+        print(self.__data)
+
+        # The number of features is equal to the number of columns
+        self.setTotalFeature(len(dataset_reader.instance.columns))
+        print(self.__totalFeature)
 
     def selection(self, selection):
         data = self.getData().iloc[:, selection]
@@ -82,7 +93,7 @@ class FeatureSelection:
 
         return trainingData, testingData, trainingClass, testingClass
 
-    def fitness(self, individual, classifier, parametrosC):
+    def fitness(self, individual, classifier, Cparams):
         accuracy = 0 
         f1Score = 0
         presicion = 0
@@ -91,7 +102,7 @@ class FeatureSelection:
         trainingData, testingData, trainingClass, testingClass = self.selection(individual)
 
         if classifier == 'KNN':
-            accuracy, f1Score, presicion, recall, mcc = KNN(trainingData, testingData, trainingClass, testingClass, int(parametrosC.split(":")[1]))
+            accuracy, f1Score, presicion, recall, mcc = KNN(trainingData, testingData, trainingClass, testingClass, int(Cparams.split(":")[1]))
         if classifier == 'RandomForest':
             accuracy, f1Score, presicion, recall, mcc = RandomForest(trainingData, testingData, trainingClass, testingClass)
         
@@ -104,8 +115,8 @@ class FeatureSelection:
 
         return fitness, accuracy, f1Score, presicion, recall, mcc, errorRate, len(individual)
     
-    def factibility(self, individuo):
-        suma = np.sum(individuo)
+    def factibility(self, individual):
+        suma = np.sum(individual)
         if suma > 0:
             return True
         else:
