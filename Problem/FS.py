@@ -61,15 +61,15 @@ class FeatureSelection:
         
         # Class for verification
         self.setClasses(dataset_reader.getSavedClass())
-        print(self.__classes)
+        # print(self.__classes)
 
         # Data without the class and non-relevant information
         self.setData(dataset_reader.getInstance())
-        print(self.__data)
+        # print(self.__data)
 
         # The number of features is equal to the number of columns
         self.setTotalFeature(len(dataset_reader.instance.columns))
-        print(self.__totalFeature)
+        # print(self.__totalFeature)
 
     def selection(self, selection):
         data = self.getData().iloc[:, selection]

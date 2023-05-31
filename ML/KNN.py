@@ -29,7 +29,7 @@ def KNN(trainingData, testingData, trainingClass, testingClass, k):
 
         accuracy    = np.round(accuracy_score(testingClass, predictionClass), decimals=3)
         f1Score     = np.round(f1_score(testingClass, predictionClass), decimals=3)
-        precision   = np.round(precision_score(testingClass, predictionClass), decimals=3)
+        precision   = np.round(precision_score(testingClass, predictionClass, zero_division=1), decimals=3)
         recall      = np.round(recall_score(testingClass, predictionClass), decimals=3)
         mcc         = np.round(matthews_corrcoef(testingClass, predictionClass), decimals=3)
 
