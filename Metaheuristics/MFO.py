@@ -1,4 +1,4 @@
-import random as r
+import random
 import numpy as np
 import math
 
@@ -9,41 +9,45 @@ import math
 #
 
 def MFO(iter, max_iter, dim, N, initial_population, bestSolutions, fitness, BestFitnessArray):
-    flame_no = round(N - iter * ((N - 1) / max_iter))
+    # Update the number of flames with equation [3.14] from the paper
+    flame_no = int(np.ceil(N - (iter + 1) * ((N - 1) / max_iter)))
 
+    # Initialize population of moths and their fitness array
     M = initial_population.copy()
     OM = fitness.copy()
 
-    # If iteration is equal to 0, otherwise is not the first gen
+    # If the iteration is equal to 0
     if (iter == 0):
         # Sort the first moth population
-        sorted_fitness = np.sort(OM)
-        I = np.argsort(OM)
+        order = OM.argsort(axis=0)
+        M = M[order, :]
+        OM = OM[order]
 
-        sorted_population = M[I, :]
-
-        # Update the flames
-        F = sorted_population
-        OF = sorted_fitness
+        # Update flames
+        F = np.copy(M)
+        OF = np.copy(OM)
     else:
-        # Initalize flames
+        # Initialize flames
         F = bestSolutions[:flame_no, :]
         OF = BestFitnessArray[:flame_no]
 
-        # Sort Flames
-        double_population = np.concatenate((F, M), axis=0)
-        double_fitness = np.concatenate((OF, OM), axis=0)
-        double_sorted_fitness = np.argsort(double_fitness, axis=0)
+        # Sort the moths
+        double_population = np.vstack((F, M))
+        double_fitness = np.hstack((OF, OM))
 
-        double_population = np.take_along_axis(double_population, double_sorted_fitness, axis=0)
-        double_fitness = np.take_along_axis(double_fitness, double_sorted_fitness, axis=0)
+        order = double_fitness.argsort(axis=0)
+        double_population = double_population[order, :]
+        double_fitness = double_fitness[order]
 
-        # Update the flames
-        F = np.split(double_population, [flame_no], axis=0)[0]
-        OF = np.split(double_fitness, [flame_no], axis=0)[0]
+        # Update flames
+        F = double_population[:flame_no, :]
+        OF = double_fitness[:flame_no]
 
-    # a linearly decreases from -1 to -2 to calculate t in equation [3.12]
-    a = -1 + iter * ((-1) / max_iter)
+    # r linearly decreases from -1 to -2 to calculate t in equation [3.12]
+    r = -1 + iter * ((-1) / max_iter)
+
+    # Prepare population for the loop
+    double_population = np.vstack((F, M))
 
     # For each moth
     for i in range(0, N):
@@ -51,20 +55,20 @@ def MFO(iter, max_iter, dim, N, initial_population, bestSolutions, fitness, Best
         for j in range(0, dim):
             if (i <= flame_no):
                 # Update D, using equation [3.13], D is the distance of the moth to the flame
-                D = abs(sorted_population[i, j] - M[i, j])
+                D = abs(double_population[i, j] - M[i, j])
                 b = 1
-                t = (a - 1) * r.random() + 1
+                t = (r - 1) * random.random() + 1
 
                 # Update M[i,j] with equation [3.12], with respect to the corresponding moth
-                M[i, j] = (D * math.exp(b * t) * math.cos(t * 2 * math.pi) + sorted_population[i, j])
+                M[i, j] = (D * math.exp(b * t) * math.cos(t * 2 * math.pi) + double_population[i, j])
 
             if (i > flame_no):
                 # Update the position of each moth with respect to ONE flame, still with Equation [3.13]
-                D = abs(sorted_population[i, j] - M[i, j])
+                D = abs(double_population[i, j] - M[i, j])
                 b = 1
-                t = (a - 1) * r.random() + 1
+                t = (r - 1) * random.random() + 1
 
                 #  Update M[i,j] with equation [3.12], with respect to the corresponding moth
-                M[i, j] = (D * math.exp(b * t) * math.cos(t * 2 * math.pi) + sorted_population[flame_no, j])
-    
+                M[i, j] = (D * math.exp(b * t) * math.cos(t * 2 * math.pi) + double_population[flame_no, j])
+
     return M, F

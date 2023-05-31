@@ -44,8 +44,9 @@ class readDataset:
             promedio.append(round(suma/df.shape[0],3))
             suma = 0
             guardar = []
-        print(median)
-        print(promedio)
+        
+        # print(median)
+        # print(promedio)
 
         # Fill "?" values with median if the column is categorical or average if is real
 
@@ -74,7 +75,7 @@ class readDataset:
                     else:
                         df.iloc[j,i] = promedio[i]
                     
-        # print toda la tabla
+        # Print the whole table
         '''            
         for i in range(0,df.shape[0]):
                     print(i+1,end=' ')
@@ -82,11 +83,11 @@ class readDataset:
                         print(df.iloc[i,j],end=' ')
                     print()
         '''
-        # print tabla
-        print(f"Instancia:\n{self.instance}\n")
+        # Print table
+        # print(f"Instancia:\n{self.instance}\n")
         
-        # print clase
-        print(f"Clase:\n{self.saved_class}")
+        # Print class
+        # print(f"Clase:\n{self.saved_class}")
     
     def getInstance(self):
         return self.instance

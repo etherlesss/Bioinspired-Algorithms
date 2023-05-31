@@ -3,7 +3,7 @@ from Solver.solverFS import solver
 from Util.read import readDataset
 
 # Dependency Installer
-#exec_installer()
+exec_installer()
 
 # Dataset path
 d_path = "./Datasets/echocardiogram.data"
@@ -29,7 +29,7 @@ instance = readDataset(d_path)
 """
 
 # Parameters
-max_iter = 10
+max_iter = 50
 population = len(instance.instance.columns)
 discretization = ["V1", "STD"]
 classifier = "KNN"

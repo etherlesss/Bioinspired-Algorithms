@@ -3,8 +3,8 @@ import numpy as np
 def initialPrint(fitness, bestFitness, time_cycle1, time_cycle2, bestAccuracy, bestF1Score, bestPrecision, bestRecall, bestMcc, bestErrorRate, bestTFS):
     print("------------------------------------------------------------------------------------------------------")
     print(
-        f"Initial fitness {str(fitness)}\n" +
-        f"Best initial fitness {str(np.min(fitness))}"
+        f"Initial fitness: {str(fitness)}\n" +
+        f"Best initial fitness: {str(np.min(fitness))}"
     )
     print("------------------------------------------------------------------------------------------------------")
 
