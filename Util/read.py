@@ -6,12 +6,26 @@ import statistics
 class readDataset:
     
     def __init__(self, d_path:str) -> None:
+        self.instance = None
+        self.dataset = None
+        self.saved_class = None
+
         print("Executing reading module...")
         time.sleep(2)
         os.system("cls")
 
         print(f"Reading {d_path}\n")
 
+        file_name = d_path.split("/")[-1]  # Get the file name from the path
+        name_parts = file_name.split(".")
+        instance_name = name_parts[0] # Get the name of the instance
+
+        if (instance_name == "echocardiogram"):
+            self.readEchocardiogram(d_path)
+        if (instance_name == "sonar"):
+            self.readSonar(d_path)
+
+    def readEchocardiogram(self, d_path):
         # Read Dataset
         self.dataset = pd.read_csv(d_path, on_bad_lines='skip')
 
@@ -89,6 +103,22 @@ class readDataset:
         # Print class
         # print(f"Clase:\n{self.saved_class}")
     
+    def readSonar(self, d_path):
+        # Read Dataset
+        self.dataset = pd.read_csv(d_path, on_bad_lines='skip')
+
+        # Extract class for result confirmation (60th dataset column)
+        self.saved_class = self.dataset.iloc[:, 60]
+
+        self.saved_class = self.saved_class.replace({
+            'R':0,
+            'M':1
+        })
+        self.saved_class = self.saved_class.values
+        
+        # Delete saved column
+        self.instance = self.dataset.drop(self.dataset.columns[[60]], axis=1)
+
     def getInstance(self):
         return self.instance
     def getSavedClass(self):

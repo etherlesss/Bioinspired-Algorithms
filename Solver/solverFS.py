@@ -125,5 +125,9 @@ def solver(max_iter, population, d_path, discretization, classifier, Cparams):
     finalPrint(BestFitness, BestTFS)
 
     end_timer = time.time()
-    print(f"Execution time: {str(end_timer - start_timer)}s")
+    exec_time = end_timer - start_timer
+    exec_time = round(exec_time, 3)
+    print(f"Execution time: {str(exec_time)}s")
     print(f"Result: {str(Best.tolist())}")
+    
+    # print(f"Result length is {len(Best)}")

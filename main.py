@@ -4,8 +4,14 @@ from Solver.solverFS import solver
 # Dependency Installer
 exec_installer()
 
+# Dataset options
+"""
+    echocardiogram.data
+    sonar.all-data
+"""
+
 # Dataset path
-d_path = "./Datasets/echocardiogram.data"
+d_path = "./Datasets/sonar.all-data"
 
 # Discretization options
 """
