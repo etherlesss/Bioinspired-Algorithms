@@ -1,5 +1,6 @@
 import numpy as np
 import time
+import matplotlib.pyplot as plt
 
 from Problem.FS import FeatureSelection as FS
 from Util.solverPrint import initialPrint, iterationPrint, finalPrint
@@ -130,4 +131,29 @@ def solver(max_iter, population, d_path, discretization, classifier, Cparams):
     print(f"Execution time: {str(exec_time)}s")
     print(f"Result: {str(Best.tolist())}")
     
+    moths = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    reverseMoths = np.sort(moths)[::-1]
+    sortedAccuracy = np.sort(accuracyArray)[::-1]
+    sortedFitness = np.sort(BestFitnessArray)[::-1]
+
+
+    #accuracy values 
+    plt.plot(reverseMoths,sortedAccuracy)
+    plt.xlabel("moth n°")
+    plt.ylabel("accuracy")
+    plt.title("accuracy values")
+    plt.show()
+    
+    #fitness values
+    plt.plot(moths,sortedFitness)
+    plt.xlabel("moth n°")
+    plt.ylabel("fitness")
+    plt.title("fitness values")
+    plt.show()
+    
+    plt.plot(sortedAccuracy,sortedFitness)
+    plt.xlabel("accuracy")
+    plt.ylabel("fitness")
+    plt.title("accuracy v/s fitness")
+    plt.show()
     # print(f"Result length is {len(Best)}")
