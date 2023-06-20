@@ -131,7 +131,7 @@ def solver(max_iter, population, d_path, discretization, classifier, Cparams):
     print(f"Execution time: {str(exec_time)}s")
     print(f"Result: {str(Best.tolist())}")
     
-    moths = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    moths = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30]
     reverseMoths = np.sort(moths)[::-1]
     sortedAccuracy = np.sort(accuracyArray)[::-1]
     sortedFitness = np.sort(BestFitnessArray)[::-1]
